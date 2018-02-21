@@ -27,7 +27,7 @@ def main():
   args = arg_parser.parse_args()
 
   symbol_counter = Counter()
-  for line in iterate_seqs(bpe_file=args.bpe):
+  for line in iterate_seqs(txt_file=args.txt, bpe_file=args.bpe):
     for word in line.split():
       symbol_counter[word] += 1
 
