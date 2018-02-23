@@ -24,6 +24,7 @@ def main():
   arg_parser.add_argument("--txt", required=True)
   arg_parser.add_argument("--bpe", required=True)
   arg_parser.add_argument("--out", default="/dev/stdout")
+  arg_parser.add_argument("--unk", default="UNK")
   args = arg_parser.parse_args()
 
   symbol_counter = Counter()
@@ -31,12 +32,21 @@ def main():
     for word in line.split():
       symbol_counter[word] += 1
 
+  beginseq, endseq = "<s>", "</s>"
+  unk = args.unk
+  special_labels = [beginseq, endseq, unk]
+  for l in special_labels:
+    assert l not in symbol_counter, "special token %r used by vocab" % l
+
   out = open(args.out, "w")
   out.write("{\n")
-  out.write("'<s>': 0,\n")
-  out.write("'</s>': 0,\n")
-  out.write("'UNK': 1,\n")
-  for i, (symbol, count) in enumerate(symbol_counter.most_common()):
+  out.write("%r: 0,\n" % beginseq)
+  out.write("%r: 0,\n" % endseq)
+  out.write("%r: 1,\n" % unk)
+  # The order in most_common is non-deterministic, due to hashing.
+  # Make it deterministic.
+  syms = sorted([(-count, symbol) for (symbol, count) in symbol_counter.most_common()])
+  for i, (_, symbol) in enumerate(syms):
     out.write("%r: %i,\n" % (symbol, i + 2))
   out.write("}\n")
 
