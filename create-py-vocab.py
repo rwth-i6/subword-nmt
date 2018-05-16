@@ -15,7 +15,7 @@ my_dir = os.path.dirname(os.path.abspath(__file__))
 def iterate_seqs(txt_file, bpe_file):
   dump_corpus_proc = subprocess.Popen(["cat", txt_file], stdout=subprocess.PIPE)
   apply_bpe_proc = subprocess.Popen(
-    ["%s/subword-nmt/apply_bpe.py" % my_dir, "-c", bpe_file], stdin=dump_corpus_proc.stdout, stdout=subprocess.PIPE)
+    ["%s/apply_bpe.py" % my_dir, "-c", bpe_file], stdin=dump_corpus_proc.stdout, stdout=subprocess.PIPE)
   dump_corpus_proc.stdout.close()
   for line in apply_bpe_proc.stdout:
     yield line.decode("utf8")
