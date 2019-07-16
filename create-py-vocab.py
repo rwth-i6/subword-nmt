@@ -28,6 +28,7 @@ def main():
   arg_parser.add_argument("--bpe", required=True)
   arg_parser.add_argument("--out", default="/dev/stdout")
   arg_parser.add_argument("--unk", default="UNK")
+  arg_parser.add_argument("--allow_special_labels", action="store_true")
   args = arg_parser.parse_args()
 
   symbol_counter = Counter()
@@ -39,7 +40,11 @@ def main():
   unk = args.unk
   special_labels = [beginseq, endseq, unk]
   for l in special_labels:
-    assert l not in symbol_counter, "special token %r used by vocab" % l
+    if args.allow_special_labels:
+      if l in symbol_counter:
+        del symbol_counter[l]
+    else:
+      assert l not in symbol_counter, "special token %r used by vocab" % l
 
   out = open(args.out, "w")
   out.write("{\n")
