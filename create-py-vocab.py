@@ -20,7 +20,7 @@ def iterate_seqs(txt_file, bpe_file):
   dump_corpus_proc = subprocess.Popen(
     ["zcat" if txt_file.endswith(".gz") else "cat", txt_file], stdout=subprocess.PIPE)
   apply_bpe_proc = subprocess.Popen(
-    ["%s/apply_bpe.py" % my_dir, "-c", bpe_file], stdin=dump_corpus_proc.stdout, stdout=subprocess.PIPE)
+    [sys.executable, "%s/apply_bpe.py" % my_dir, "-c", bpe_file], stdin=dump_corpus_proc.stdout, stdout=subprocess.PIPE)
   dump_corpus_proc.stdout.close()
   for line in apply_bpe_proc.stdout:
     yield line.decode("utf8")
